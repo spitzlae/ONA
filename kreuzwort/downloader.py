@@ -99,9 +99,12 @@ async def download(numbers, output_dir):
     async with async_playwright() as p:
         browser = await p.chromium.launch(
             headless=True,
-            args=["--no-sandbox", "--disable-setuid-sandbox"]
+            args=["--no-sandbox", "--disable-setuid-sandbox", "--ignore-certificate-errors"]
         )
-        context = await browser.new_context(viewport={"width": 1920, "height": 1400})
+        context = await browser.new_context(
+            viewport={"width": 1920, "height": 1400},
+            ignore_https_errors=True
+        )
         page = await context.new_page()
 
         for num in numbers:
