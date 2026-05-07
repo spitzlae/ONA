@@ -42,6 +42,9 @@ def clean_ocr_text(text: str, debug: bool = False) -> tuple[str, bool]:
     # Phase 2: Lowercase (NACH Bindestrich-Logik)
     text = text.lower()
 
+    # FIX 0b: Taktangaben — "44-takt" → "4/4-takt", "34-takt" → "3/4-takt"
+    text = re.sub(r'\b(\d)(\d)-takt\b', r'\1/\2-takt', text)
+
     # FIX 1: Todessymbol — "t 1983" → "† 1983"
     text = re.sub(r'\b(?:t|†)\s+(\d{4})\b', r'† \1', text)
     text = re.sub(r'\btt\s+(\d{4})\b', r'†† \1', text)
@@ -51,8 +54,8 @@ def clean_ocr_text(text: str, debug: bool = False) -> tuple[str, bool]:
     # FIX 2: Verdoppelte Zeichen — "Beeeedrängnis" → "Bedrängnis"
     text = re.sub(r'([a-zäöüß])\1{2,}', r'\1\1', text)
 
-    # Phase 3: Ungültige Zeichen entfernen
-    text = re.sub(r'[^a-zA-ZäöüÄÖÜß\s\-\.,:;0-9†]+', '', text)
+    # Phase 3: Ungültige Zeichen entfernen (/ erlaubt für Taktangaben)
+    text = re.sub(r'[^a-zA-ZäöüÄÖÜß\s\-\.,:;/0-9†]+', '', text)
     text = text.strip()
     text = re.sub(r'\s+', ' ', text)
 
