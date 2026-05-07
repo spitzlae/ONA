@@ -179,12 +179,18 @@ def _download_via_docker(riddle_numbers: list[int], verbose: bool = True) -> dic
     if verbose:
         print(f"[Downloader/Docker] Lade {len(to_download)} Rätsel via Container...")
 
+    # Script als temporäre Datei schreiben und in den Container mounten
+    import tempfile
+    script_file = Path(tempfile.mktemp(suffix=".py", prefix="pw_download_"))
+    script_file.write_text(_DOCKER_DOWNLOAD_SCRIPT)
+
     cmd = [
         "docker", "run", "--rm",
         "-v", f"{input_dir}:/output",
+        "-v", f"{script_file}:/tmp/download.py:ro",
         _DOCKER_IMAGE,
         "bash", "-c",
-        f"pip install -q Pillow numpy && python3 -c {repr(_DOCKER_DOWNLOAD_SCRIPT)} {numbers_csv} /output"
+        f"pip install -q Pillow numpy && python3 /tmp/download.py {numbers_csv} /output"
     ]
 
     try:
@@ -208,6 +214,8 @@ def _download_via_docker(riddle_numbers: list[int], verbose: bool = True) -> dic
             print("[Downloader/Docker] Timeout (120s)")
         stats['failed'] = len(to_download)
         return stats
+    finally:
+        script_file.unlink(missing_ok=True)
 
     # Ergebnisse verifizieren
     for num in to_download:
