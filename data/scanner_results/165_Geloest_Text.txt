@@ -1,0 +1,57 @@
+KREUZWORTRÄTSEL LÖSUNG - BILD 165
+================================================================================
+
+Gelöst: 47/47
+Laufzeit: 0.0037s
+Iterationen: 48
+Backtracks: 0
+
+LÖSUNGEN:
+--------------------------------------------------------------------------------
+✅ vorsilbe                                           = ENT
+✅ aufgeweckt                                         = SMART
+✅ brücke über einen bach                             = STEG
+✅ griechischer hirtengott                            = PAN
+✅ verzierung an bauwerken                            = ORNAMENT
+✅ ugs.: entspannen                                   = RELAXEN
+✅ religiös verehren                                  = ANBETEN
+✅ goldklumpen                                        = NUGGET
+✅ meeresraubfisch                                    = HAI
+✅ halbgott der griechischen sage                     = HEROS
+✅ vulkan auf sizilien                                = AETNA
+✅ trainieren                                         = UEBEN
+✅ zweimaster                                         = BRIGG
+✅ lateinisch, span.: sonne                           = SOL
+✅ postsendung                                        = PAKET
+✅ markenzeichen                                      = LOGO
+✅ italienisch, span.: see                            = LAGO
+✅ vererbungslehre                                    = GENETIK
+✅ dummes gerede                                      = GEFASEL
+✅ hebräischer buchstabe                              = GIMEL
+✅ einsiedler                                         = EREMIT
+✅ denksportler                                       = RATER
+✅ biblische männergestalt                            = ONAN
+✅ fischeier                                          = ROGEN
+✅ preisreduzierung                                   = RABATT
+✅ spanische landschaft                               = GALICIEN
+✅ englischer männername                              = NED
+✅ fremdwortteil: lang, mächtig                       = MEGA
+✅ vormittagsveranstaltung                            = MATINEE
+✅ griechische unheilsgöttin                          = ATE
+✅ beiname atatürks                                   = KEMAL
+✅ beste zimtsorte                                    = KANEEL
+✅ augendeckel                                        = LID
+✅ langarmaffe                                        = LAR
+✅ färbetechnik für stoffe                            = BATIK
+✅ schlagrhythmen                                     = BEATS
+✅ schonkost                                          = DIAET
+✅ magenausgang                                       = DARM
+✅ kaffeehaus                                         = CAFE
+✅ dynamik                                            = ELAN
+✅ griechische halbinsel                              = ATTIKA
+✅ italienisch: drei                                  = TRE
+✅ kalb-, ziegeno. schafleder                         = KID
+✅ norddeutsch: schilf                                = REET
+✅ zum pflücken geeignet obst                         = REIF
+✅ zierpflanze                                        = BLUME
+✅ verstoß gegen gebote gottes                        = SUENDE

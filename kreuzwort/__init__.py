@@ -1,0 +1,1 @@
+# Kreuzwort — Modularer Schwedenrätsel-Solver

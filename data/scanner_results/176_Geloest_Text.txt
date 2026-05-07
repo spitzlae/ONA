@@ -1,0 +1,57 @@
+KREUZWORTRÄTSEL LÖSUNG - BILD 176
+================================================================================
+
+Gelöst: 46/47
+Laufzeit: 0.0045s
+Iterationen: 51
+Backtracks: 50
+
+LÖSUNGEN:
+--------------------------------------------------------------------------------
+✅ ein tv- sender                                     = RTL
+✅ französisches kugelspiel                           = BOULE
+✅ buch der bibel                                     = AMOS
+✅ griechische unheilsgöttin                          = ATE
+✅ sternforscher                                      = ASTRONOM
+✅ dauerhaft niederlassen                             = SIEDELN
+✅ scheinakazie                                       = ROBINIE
+✅ könig der elfen                                    = OBERON
+✅ tanzfigur der quadrille                            = ETE
+✅ stockwerk                                          = ETAGE
+✅ gewiefter mensch franz.                            = FILOU
+✅ stoffzierband                                      = BORTE
+⚠️ langsamer tanz im 44-takt                          = BL?ES
+✅ betagt                                             = ALT
+✅ vorname von filmstar murphy                        = EDDIE
+✅ schnell beweglich                                  = AGIL
+✅ hohe spielkarten                                   = ASSE
+✅ mittelmeeranrainer                                 = ITALIEN
+✅ schnürmieder                                       = KORSETT
+✅ trockene backwaren                                 = KEKSE
+✅ borgen                                             = LEIHEN
+✅ skandal                                            = EKLAT
+✅ froschlurch                                        = UNKE
+✅ kurze zeitspanne                                   = WEILE
+✅ nordamerik. hirschart                              = WAPITI
+✅ zeitungsanzeigen                                   = INSERATE
+✅ fluss in england                                   = EXE
+✅ studentenausschuss                                 = ASTA
+✅ gedächtnisverlust                                  = AMNESIE
+✅ ugs.: nichts                                       = NIX
+✅ tropenbaum                                         = PALME
+✅ belohnungen                                        = PREISE
+✅ binnengewässer                                     = SEE
+✅ platz, stelle                                      = ORT
+✅ besitz                                             = EIGEN
+✅ könig von sardinien                                = ENZIO
+✅ gesichtshautfarbe                                  = TEINT
+✅ vorname eulenspiegels                              = TILL
+✅ weibl. märchengestalten                            = FEEN
+✅ afrik. schreitvogel                                = IBIS
+✅ ein insekt, zirpe                                  = ZIKADE
+✅ kfz-abgasentgifter kw.                             = KAT
+✅ ein tongeschlecht                                  = DUR
+✅ frauenkurzname                                     = LILI
+✅ ehem. einheit für den druck                        = ATUE
+✅ schlagwaffe                                        = KEULE
+✅ fest der auferstehung                              = OSTERN

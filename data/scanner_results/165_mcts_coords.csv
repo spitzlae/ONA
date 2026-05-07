@@ -1,0 +1,48 @@
+Frage,Richtung,Start,Ende,Länge,Pfeil_Zelle_Y,Pfeil_Zelle_X,Pfeiltyp
+vorsilbe,V,Y:0 X:2,Y:2 X:2,3,0,2,arrow_LEFT_DOWN_no_number
+aufgeweckt,V,Y:0 X:4,Y:4 X:4,5,0,4,arrow_LEFT_DOWN_no_number
+brücke über einen bach,V,Y:0 X:7,Y:3 X:7,4,0,7,arrow_LEFT_DOWN_no_number
+griechischer hirtengott,V,Y:0 X:10,Y:2 X:10,3,0,10,arrow_LEFT_DOWN_no_number
+verzierung an bauwerken,H,Y:1 X:0,Y:1 X:7,8,1,0,arrow_DOWN_RIGHT_no_number
+ugs.: entspannen,V,Y:1 X:1,Y:7 X:1,7,1,1,arrow_DOWN_DOWN_no_number
+religiös verehren,V,Y:1 X:3,Y:7 X:3,7,1,3,arrow_DOWN_DOWN_no_number
+goldklumpen,V,Y:1 X:6,Y:6 X:6,6,1,6,arrow_DOWN_DOWN_no_number
+meeresraubfisch,H,Y:1 X:9,Y:1 X:11,3,1,9,arrow_combo_RIGHT_DOWN_with_number
+halbgott der griechischen sage,V,Y:1 X:9,Y:5 X:9,5,1,9,arrow_combo_RIGHT_DOWN_with_number
+vulkan auf sizilien,H,Y:2 X:0,Y:2 X:4,5,2,0,arrow_UP_RIGHT_no_number
+trainieren,H,Y:2 X:6,Y:2 X:10,5,2,6,arrow_RIGHT_RIGHT_with_number
+zweimaster,H,Y:3 X:3,Y:3 X:7,5,3,3,arrow_RIGHT_RIGHT_with_number
+"lateinisch, span.: sonne",V,Y:3 X:11,Y:5 X:11,3,3,11,arrow_DOWN_DOWN_no_number
+postsendung,H,Y:4 X:0,Y:4 X:4,5,4,0,arrow_UP_RIGHT_no_number
+markenzeichen,H,Y:4 X:8,Y:4 X:11,4,4,8,arrow_combo_RIGHT_DOWN_no_number
+"italienisch, span.: see",V,Y:4 X:8,Y:7 X:8,4,4,8,arrow_combo_RIGHT_DOWN_no_number
+vererbungslehre,V,Y:4 X:10,Y:10 X:10,7,4,10,arrow_DOWN_DOWN_no_number
+dummes gerede,H,Y:5 X:5,Y:5 X:11,7,5,5,arrow_combo_RIGHT_DOWN_no_number
+hebräischer buchstabe,V,Y:5 X:5,Y:9 X:5,5,5,5,arrow_combo_RIGHT_DOWN_no_number
+einsiedler,H,Y:6 X:1,Y:6 X:6,6,6,1,arrow_RIGHT_RIGHT_no_number
+denksportler,V,Y:6 X:2,Y:10 X:2,5,6,2,arrow_DOWN_DOWN_no_number
+biblische männergestalt,H,Y:7 X:0,Y:7 X:3,4,7,0,arrow_UP_RIGHT_no_number
+fischeier,H,Y:7 X:7,Y:7 X:11,5,7,7,arrow_combo_RIGHT_DOWN_no_number
+preisreduzierung,V,Y:7 X:7,Y:12 X:7,6,7,7,arrow_combo_RIGHT_DOWN_no_number
+spanische landschaft,V,Y:7 X:9,Y:14 X:9,8,7,9,arrow_DOWN_DOWN_no_number
+englischer männername,V,Y:7 X:11,Y:9 X:11,3,7,11,arrow_DOWN_DOWN_no_number
+"fremdwortteil: lang, mächtig",H,Y:8 X:4,Y:8 X:7,4,8,4,arrow_combo_RIGHT_DOWN_no_number
+vormittagsveranstaltung,V,Y:8 X:4,Y:14 X:4,7,8,4,arrow_combo_RIGHT_DOWN_no_number
+griechische unheilsgöttin,H,Y:8 X:9,Y:8 X:11,3,8,9,arrow_RIGHT_RIGHT_no_number
+beiname atatürks,H,Y:9 X:1,Y:9 X:5,5,9,1,arrow_combo_RIGHT_DOWN_no_number
+beste zimtsorte,V,Y:9 X:1,Y:14 X:1,6,9,1,arrow_combo_RIGHT_DOWN_no_number
+augendeckel,H,Y:9 X:9,Y:9 X:11,3,9,9,arrow_RIGHT_RIGHT_no_number
+langarmaffe,H,Y:10 X:0,Y:10 X:2,3,10,0,arrow_UP_RIGHT_no_number
+färbetechnik für stoffe,H,Y:10 X:6,Y:10 X:10,5,10,6,arrow_combo_RIGHT_DOWN_no_number
+schlagrhythmen,V,Y:10 X:6,Y:14 X:6,5,10,6,arrow_combo_RIGHT_DOWN_no_number
+schonkost,H,Y:11 X:3,Y:11 X:7,5,11,3,arrow_combo_RIGHT_DOWN_no_number
+magenausgang,V,Y:11 X:3,Y:14 X:3,4,11,3,arrow_combo_RIGHT_DOWN_no_number
+kaffeehaus,V,Y:11 X:11,Y:14 X:11,4,11,11,arrow_DOWN_DOWN_with_number
+dynamik,H,Y:12 X:1,Y:12 X:4,4,12,1,arrow_RIGHT_RIGHT_no_number
+griechische halbinsel,H,Y:12 X:6,Y:12 X:11,6,12,6,arrow_RIGHT_RIGHT_no_number
+italienisch: drei,V,Y:12 X:8,Y:14 X:8,3,12,8,arrow_DOWN_DOWN_no_number
+"kalb-, ziegeno. schafleder",V,Y:12 X:10,Y:14 X:10,3,12,10,arrow_DOWN_DOWN_no_number
+norddeutsch: schilf,H,Y:13 X:3,Y:13 X:6,4,13,3,arrow_RIGHT_RIGHT_no_number
+zum pflücken geeignet obst,H,Y:13 X:8,Y:13 X:11,4,13,8,arrow_RIGHT_RIGHT_no_number
+zierpflanze,H,Y:14 X:0,Y:14 X:4,5,14,0,arrow_DOWN_RIGHT_no_number
+verstoß gegen gebote gottes,H,Y:14 X:6,Y:14 X:11,6,14,6,arrow_RIGHT_RIGHT_no_number
