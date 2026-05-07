@@ -190,7 +190,7 @@ def _download_via_docker(riddle_numbers: list[int], verbose: bool = True) -> dic
         "-v", f"{script_file}:/tmp/download.py:ro",
         _DOCKER_IMAGE,
         "bash", "-c",
-        f"pip install -q Pillow numpy && python3 /tmp/download.py {numbers_csv} /output"
+        f"pip install -q Pillow numpy playwright && python3 /tmp/download.py {numbers_csv} /output"
     ]
 
     try:
