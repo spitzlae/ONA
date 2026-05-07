@@ -48,12 +48,26 @@ def _verify_png(file_path: Path) -> tuple[bool, int]:
 
 
 def _has_playwright() -> bool:
-    """Prüft ob Playwright nativ verfügbar ist."""
+    """Prüft ob Playwright nativ verfügbar ist UND Chromium installiert ist."""
     try:
         from playwright.async_api import async_playwright
-        return True
     except ImportError:
         return False
+
+    # Prüfe ob der Browser tatsächlich existiert
+    cache_dir = Path.home() / ".cache" / "ms-playwright"
+    if not cache_dir.exists():
+        return False
+
+    # Suche nach einer chromium-Binary
+    for p in cache_dir.rglob("chrome-headless-shell"):
+        if p.is_file():
+            return True
+    for p in cache_dir.rglob("chromium"):
+        if p.is_file():
+            return True
+
+    return False
 
 
 def _has_docker() -> bool:

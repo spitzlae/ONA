@@ -16,7 +16,7 @@ Verwendung:
     python -m kreuzwort.main --download 165    # Download erzwingen
 
 Erkennt automatisch was verfügbar ist:
-    - Playwright installiert → Downloader aktiv
+    - Playwright oder Docker installiert → Downloader aktiv
     - Keras-Modell vorhanden → Scanner aktiv
     - Tesseract installiert → OCR aktiv
     - build-cli eingeloggt → Claude Sonnet als LLM
@@ -43,13 +43,10 @@ from kreuzwort.solver import BacktrackingCSPSolver, baue_koordinaten_liste
 from kreuzwort.renderer import render_solution, render_text_report
 
 
-def _has_playwright() -> bool:
-    """Prüft ob Playwright + Chromium installiert ist."""
-    try:
-        import playwright
-        return True
-    except ImportError:
-        return False
+def _has_download() -> bool:
+    """Prüft ob Download möglich ist (Playwright nativ oder Docker)."""
+    from kreuzwort.downloader import _has_playwright, _has_docker
+    return _has_playwright() or _has_docker()
 
 
 def _has_keras_model() -> bool:
@@ -304,7 +301,7 @@ def main(args: list[str] = None):
 
     # Fähigkeiten erkennen
     from kreuzwort.config import HAS_CLAUDE
-    has_playwright = _has_playwright()
+    has_download = _has_download()
     has_model = _has_keras_model()
     has_tess = _has_tesseract()
 
@@ -322,13 +319,13 @@ def main(args: list[str] = None):
         use_ocr = False
 
     print(f"Modus: {mode}")
-    print(f"  Playwright: {'vorhanden' if has_playwright else 'nicht gefunden'}")
+    print(f"  Download: {'vorhanden' if has_download else 'nicht gefunden'}")
     print(f"  Keras-Modell: {'vorhanden' if has_model else 'nicht gefunden'}")
     print(f"  Tesseract: {'vorhanden' if has_tess else 'nicht gefunden'}")
     print(f"  LLM: {'Claude Sonnet (build-cli)' if HAS_CLAUDE else 'Groq Llama'}")
 
     # Download wenn nötig
-    if force_download or (has_playwright and any(
+    if force_download or (has_download and any(
         not (INPUT_FOLDER / f"{n:03d}.png").exists() for n in img_numbers
     )):
         missing = [n for n in img_numbers
