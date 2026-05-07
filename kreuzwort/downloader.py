@@ -10,7 +10,6 @@ Croppt auf 997×1247px mit Y-Offset -13px.
 
 import asyncio
 import subprocess
-import numpy as np
 from pathlib import Path
 from PIL import Image
 import io
@@ -85,7 +84,6 @@ def _has_docker() -> bool:
 # --- Inline-Script das im Docker-Container läuft ---
 _DOCKER_DOWNLOAD_SCRIPT = '''
 import asyncio, sys, io, json
-import numpy as np
 from PIL import Image
 from playwright.async_api import async_playwright
 
@@ -124,18 +122,15 @@ async def download(numbers, output_dir):
                 top = max(0, (img_height - CROP_HEIGHT) // 2)
                 right = min(img_width, left + CROP_WIDTH)
                 bottom = min(img_height, top + CROP_HEIGHT)
+                # Y-Offset direkt im Crop berücksichtigen
+                top = max(0, top + abs(Y_OFFSET_PX))
+                bottom = top + CROP_HEIGHT
+                if bottom > img_height:
+                    bottom = img_height
+                    top = max(0, bottom - CROP_HEIGHT)
+
                 cropped = img.crop((left, top, right, bottom))
-
-                try:
-                    import cv2
-                    cropped_cv = cv2.cvtColor(np.array(cropped), cv2.COLOR_RGB2BGR)
-                    M = np.float32([[1, 0, 0], [0, 1, Y_OFFSET_PX]])
-                    shifted = cv2.warpAffine(cropped_cv, M, (CROP_WIDTH, CROP_HEIGHT))
-                    final = Image.fromarray(cv2.cvtColor(shifted, cv2.COLOR_BGR2RGB))
-                except ImportError:
-                    final = cropped
-
-                final.save(png_path, "PNG", optimize=False)
+                cropped.save(png_path, "PNG", optimize=False)
                 results[num_str] = True
                 print(f"  {num_str}: ok", flush=True)
             except Exception as e:
@@ -193,7 +188,7 @@ def _download_via_docker(riddle_numbers: list[int], verbose: bool = True) -> dic
         "-v", f"{script_file}:/tmp/download.py:ro",
         _DOCKER_IMAGE,
         "bash", "-c",
-        f"pip install -q Pillow numpy playwright==1.52.0 && python3 /tmp/download.py {numbers_csv} /output"
+        f"pip install -q Pillow playwright==1.52.0 && python3 /tmp/download.py {numbers_csv} /output"
     ]
 
     try:
@@ -270,11 +265,6 @@ async def _download_native(riddle_numbers: list[int], verbose: bool = True) -> d
                 continue
 
             try:
-                try:
-                    import cv2
-                except ImportError:
-                    cv2 = None
-
                 url = _URL_TEMPLATE.format(num=num)
                 await page.goto(url, wait_until='networkidle', timeout=15000)
                 await asyncio.sleep(1.5)
@@ -285,18 +275,15 @@ async def _download_native(riddle_numbers: list[int], verbose: bool = True) -> d
 
                 left = max(0, (img_width - CROP_WIDTH) // 2)
                 top = max(0, (img_height - CROP_HEIGHT) // 2)
+                # Y-Offset direkt im Crop berücksichtigen
+                top = max(0, top + abs(Y_OFFSET_PX))
                 right = min(img_width, left + CROP_WIDTH)
-                bottom = min(img_height, top + CROP_HEIGHT)
-                cropped_img = img.crop((left, top, right, bottom))
+                bottom = top + CROP_HEIGHT
+                if bottom > img_height:
+                    bottom = img_height
+                    top = max(0, bottom - CROP_HEIGHT)
 
-                if cv2 is not None:
-                    cropped_cv = cv2.cvtColor(np.array(cropped_img), cv2.COLOR_RGB2BGR)
-                    M = np.float32([[1, 0, 0], [0, 1, Y_OFFSET_PX]])
-                    shifted_cv = cv2.warpAffine(cropped_cv, M, (CROP_WIDTH, CROP_HEIGHT))
-                    final_img = Image.fromarray(cv2.cvtColor(shifted_cv, cv2.COLOR_BGR2RGB))
-                else:
-                    final_img = cropped_img
-
+                final_img = img.crop((left, top, right, bottom))
                 final_img.save(str(png_path), "PNG", optimize=False)
 
                 is_valid, file_size = _verify_png(png_path)
