@@ -50,6 +50,23 @@ ANZAHL_SPALTEN = 12
 # --- API Keys ---
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY") or os.environ.get("GROQ_Roche")
 
+
+def _has_build_cli() -> bool:
+    """Prüft ob build-cli verfügbar und eingeloggt ist."""
+    import subprocess
+    try:
+        result = subprocess.run(
+            ["build-cli", "auth", "token"],
+            capture_output=True, text=True, timeout=10
+        )
+        return result.returncode == 0 and len(result.stdout.strip()) > 20
+    except Exception:
+        return False
+
+
+# Claude via build-cli verfügbar? (nur auf Laptop)
+HAS_CLAUDE = _has_build_cli() if RUNTIME == "local" else False
+
 # --- Ordner anlegen ---
 def ensure_folders():
     """Erstellt alle nötigen Ordner falls sie nicht existieren."""

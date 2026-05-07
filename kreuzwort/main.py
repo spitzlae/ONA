@@ -1,22 +1,26 @@
 """
-Kreuzworträtsel Pipeline — vom PNG bis zur Lösung.
+Kreuzworträtsel Pipeline — vom Download bis zur Lösung.
 
 Vollständiger Ablauf:
+    0. Downloader: PNG von raetselzentrale.de (wenn Playwright vorhanden)
     1. CNN-Scanner: PNG → grid_classes.npy
     2. OCR: Fragetexte aus dem Bild lesen
     3. MCTS-Extraktion: Aufgaben aus Grid + OCR ableiten
-    4. Lexikon-Lookup: Antworten suchen (DB → Crawler → Groq)
+    4. Lexikon-Lookup: Antworten suchen (DB → Crawler → Claude/Groq)
     5. Backtracking-Solver: Rätsel lösen
     6. Renderer: Bitmap + Text-Report
 
 Verwendung:
     python -m kreuzwort.main 165
     python -m kreuzwort.main 1-5,10
+    python -m kreuzwort.main --download 165    # Download erzwingen
 
 Erkennt automatisch was verfügbar ist:
+    - Playwright installiert → Downloader aktiv
     - Keras-Modell vorhanden → Scanner aktiv
     - Tesseract installiert → OCR aktiv
-    - Beides fehlt → Fallback auf vorberechnete CSV-Dateien
+    - build-cli eingeloggt → Claude Sonnet als LLM
+    - Sonst → Groq Llama als LLM
 """
 
 import sys
@@ -37,6 +41,15 @@ from kreuzwort.lexikon.db import init_db
 from kreuzwort.lexikon.lookup import LexikonLookup
 from kreuzwort.solver import BacktrackingCSPSolver, baue_koordinaten_liste
 from kreuzwort.renderer import render_solution, render_text_report
+
+
+def _has_playwright() -> bool:
+    """Prüft ob Playwright + Chromium installiert ist."""
+    try:
+        import playwright
+        return True
+    except ImportError:
+        return False
 
 
 def _has_keras_model() -> bool:
@@ -269,10 +282,15 @@ def main(args: list[str] = None):
         args = sys.argv[1:]
 
     if not args:
-        print("Verwendung: python -m kreuzwort.main <bildnummer(n)>")
+        print("Verwendung: python -m kreuzwort.main [--download] <bildnummer(n)>")
         print("Beispiele:  python -m kreuzwort.main 165")
         print("            python -m kreuzwort.main 1-5,10")
+        print("            python -m kreuzwort.main --download 165")
         sys.exit(1)
+
+    # --download Flag parsen
+    force_download = "--download" in args
+    args = [a for a in args if a != "--download"]
 
     user_input = ' '.join(args)
     img_numbers = parse_image_input(user_input)
@@ -285,6 +303,8 @@ def main(args: list[str] = None):
     init_db()
 
     # Fähigkeiten erkennen
+    from kreuzwort.config import HAS_CLAUDE
+    has_playwright = _has_playwright()
     has_model = _has_keras_model()
     has_tess = _has_tesseract()
 
@@ -302,14 +322,21 @@ def main(args: list[str] = None):
         use_ocr = False
 
     print(f"Modus: {mode}")
-    if has_model:
-        print(f"  Keras-Modell: vorhanden")
-    else:
-        print(f"  Keras-Modell: nicht gefunden")
-    if has_tess:
-        print(f"  Tesseract: vorhanden")
-    else:
-        print(f"  Tesseract: nicht gefunden")
+    print(f"  Playwright: {'vorhanden' if has_playwright else 'nicht gefunden'}")
+    print(f"  Keras-Modell: {'vorhanden' if has_model else 'nicht gefunden'}")
+    print(f"  Tesseract: {'vorhanden' if has_tess else 'nicht gefunden'}")
+    print(f"  LLM: {'Claude Sonnet (build-cli)' if HAS_CLAUDE else 'Groq Llama'}")
+
+    # Download wenn nötig
+    if force_download or (has_playwright and any(
+        not (INPUT_FOLDER / f"{n:03d}.png").exists() for n in img_numbers
+    )):
+        missing = [n for n in img_numbers
+                   if not (INPUT_FOLDER / f"{n:03d}.png").exists()]
+        if missing:
+            print(f"\n[Phase 0] Download {len(missing)} fehlende PNGs...")
+            from kreuzwort.downloader import download
+            download(missing, verbose=True)
 
     lookup = LexikonLookup()
     print(f"  SuperLexikon: {len(lookup.cache)} Einträge im Cache")
