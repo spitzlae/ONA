@@ -35,7 +35,8 @@ if RUNTIME == "colab":
 elif RUNTIME == "ona":
     DATA_ROOT = Path("/workspaces/ONA/data")
 else:
-    DATA_ROOT = Path.home() / "kreuzwort_data"
+    # Lokal: data/ relativ zum Projektverzeichnis
+    DATA_ROOT = Path(__file__).parent.parent / "data"
 
 INPUT_FOLDER = DATA_ROOT / "input_data"
 OUTPUT_FOLDER = DATA_ROOT / "scanner_results"
