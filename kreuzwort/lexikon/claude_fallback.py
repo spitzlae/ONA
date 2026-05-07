@@ -10,6 +10,7 @@ import requests
 
 _PROXY_URL = "https://eu.build-cli.roche.com/proxy"
 _MODEL = "claude-sonnet-4-6"
+_CUSTOM_HEADERS = {"x-build-cli-tool": "claude"}
 
 
 def _get_token() -> str | None:
@@ -60,6 +61,7 @@ def ask_claude(frage: str, laenge: int) -> list[str]:
                 "Authorization": f"Bearer {token}",
                 "Content-Type": "application/json",
                 "anthropic-version": "2023-06-01",
+                **_CUSTOM_HEADERS,
             },
             json={
                 "model": _MODEL,
