@@ -1,0 +1,48 @@
+Frage,Richtung,Start,Ende,Länge,Pfeil_Zelle_Y,Pfeil_Zelle_X,Pfeiltyp
+kurz für: in das,V,Y:0 X:2,Y:2 X:2,3,0,2,arrow_LEFT_DOWN_no_number
+bratenstück,V,Y:0 X:4,Y:4 X:4,5,0,4,arrow_LEFT_DOWN_no_number
+blutader,V,Y:0 X:7,Y:3 X:7,4,0,7,arrow_LEFT_DOWN_no_number
+rheinlastkahn,V,Y:0 X:10,Y:2 X:10,3,0,10,arrow_LEFT_DOWN_no_number
+gewinnbeteiligung,H,Y:1 X:0,Y:1 X:7,8,1,0,arrow_DOWN_RIGHT_no_number
+religiöse hingabe,V,Y:1 X:1,Y:7 X:1,7,1,1,arrow_DOWN_DOWN_with_number
+suppenschüssel,V,Y:1 X:3,Y:7 X:3,7,1,3,arrow_DOWN_DOWN_no_number
+gegen geld vermitteln,V,Y:1 X:6,Y:6 X:6,6,1,6,arrow_DOWN_DOWN_no_number
+vorname schmelings † 2005,H,Y:1 X:9,Y:1 X:11,3,1,9,arrow_combo_RIGHT_DOWN_no_number
+gesichtsspiel,V,Y:1 X:9,Y:5 X:9,5,1,9,arrow_combo_RIGHT_DOWN_no_number
+land im wasser,H,Y:2 X:0,Y:2 X:4,5,2,0,arrow_UP_RIGHT_no_number
+zum altertum gehörend,H,Y:2 X:6,Y:2 X:10,5,2,6,arrow_RIGHT_RIGHT_no_number
+held in der sage,H,Y:3 X:3,Y:3 X:7,5,3,3,arrow_RIGHT_RIGHT_no_number
+verhältniswort,V,Y:3 X:11,Y:5 X:11,3,3,11,arrow_DOWN_DOWN_no_number
+fortbewegungsart,H,Y:4 X:0,Y:4 X:4,5,4,0,arrow_UP_RIGHT_no_number
+gewichtsmaß kw.,H,Y:4 X:8,Y:4 X:11,4,4,8,arrow_combo_RIGHT_DOWN_no_number
+beingelenk,V,Y:4 X:8,Y:7 X:8,4,4,8,arrow_combo_RIGHT_DOWN_no_number
+sage um einen heiligen,V,Y:4 X:10,Y:10 X:10,7,4,10,arrow_DOWN_DOWN_no_number
+glasierter ziegel,H,Y:5 X:5,Y:5 X:11,7,5,5,arrow_combo_RIGHT_DOWN_no_number
+schiffsgrundbalken mz.,V,Y:5 X:5,Y:9 X:5,5,5,5,arrow_combo_RIGHT_DOWN_no_number
+nach innen,H,Y:6 X:1,Y:6 X:6,6,6,1,arrow_RIGHT_RIGHT_no_number
+türk. name von smyrna,V,Y:6 X:2,Y:10 X:2,5,6,2,arrow_DOWN_DOWN_no_number
+männerkosename,H,Y:7 X:0,Y:7 X:3,4,7,0,arrow_UP_RIGHT_with_number
+strom zur nordsee,H,Y:7 X:7,Y:7 X:11,5,7,7,arrow_combo_RIGHT_DOWN_no_number
+teil des augenlids,V,Y:7 X:7,Y:12 X:7,6,7,7,arrow_combo_RIGHT_DOWN_no_number
+transportmittel in bergen,V,Y:7 X:9,Y:14 X:9,8,7,9,arrow_DOWN_DOWN_no_number
+ind. politiker und literat,V,Y:7 X:11,Y:9 X:11,3,7,11,arrow_DOWN_DOWN_no_number
+tonreicher marschboden,H,Y:8 X:4,Y:8 X:7,4,8,4,arrow_combo_RIGHT_DOWN_no_number
+kleidungsteile,V,Y:8 X:4,Y:14 X:4,7,8,4,arrow_combo_RIGHT_DOWN_no_number
+kosename e. span. königin,H,Y:8 X:9,Y:8 X:11,3,8,9,arrow_RIGHT_RIGHT_no_number
+ritterliche liebes-iyrik,H,Y:9 X:1,Y:9 X:5,5,9,1,arrow_combo_RIGHT_DOWN_no_number
+us-filmstar † 1962,V,Y:9 X:1,Y:14 X:1,6,9,1,arrow_combo_RIGHT_DOWN_no_number
+künstliche weltsprache,H,Y:9 X:9,Y:9 X:11,3,9,9,arrow_RIGHT_RIGHT_no_number
+treffer beim fußball,H,Y:10 X:0,Y:10 X:2,3,10,0,arrow_UP_RIGHT_no_number
+aufwickler,H,Y:10 X:6,Y:10 X:10,5,10,6,arrow_combo_RIGHT_DOWN_no_number
+himmelskörper,V,Y:10 X:6,Y:14 X:6,5,10,6,arrow_combo_RIGHT_DOWN_no_number
+großräumigkeit,H,Y:11 X:3,Y:11 X:7,5,11,3,arrow_combo_RIGHT_DOWN_no_number
+"aus dem grund, dass",V,Y:11 X:3,Y:14 X:3,4,11,3,arrow_combo_RIGHT_DOWN_no_number
+ugs.: foppen,V,Y:11 X:11,Y:14 X:11,4,11,11,arrow_DOWN_DOWN_no_number
+schiffstau,H,Y:12 X:1,Y:12 X:4,4,12,1,arrow_RIGHT_RIGHT_no_number
+vertretung,H,Y:12 X:6,Y:12 X:11,6,12,6,arrow_RIGHT_RIGHT_no_number
+alte japanische münze,V,Y:12 X:8,Y:14 X:8,3,12,8,arrow_DOWN_DOWN_no_number
+italienisch: drei,V,Y:12 X:10,Y:14 X:10,3,12,10,arrow_DOWN_DOWN_no_number
+balkanfriedenstruppe abk.,H,Y:13 X:3,Y:13 X:6,4,13,3,arrow_RIGHT_RIGHT_no_number
+großes ansehen,H,Y:13 X:8,Y:13 X:11,4,13,8,arrow_RIGHT_RIGHT_no_number
+maurerwerkzeug,H,Y:14 X:0,Y:14 X:4,5,14,0,arrow_DOWN_RIGHT_no_number
+ordensfrauen,H,Y:14 X:6,Y:14 X:11,6,14,6,arrow_RIGHT_RIGHT_no_number

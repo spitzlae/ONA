@@ -248,6 +248,79 @@ def process_riddle(img_num: str, lookup: LexikonLookup,
         task['loesung'] = wort
 
     geloest = sum(1 for t in tasks if t['loesung'] and '?' not in t['loesung'])
+
+    # --- Phase 5b: Pattern-geführtes Re-Lookup für ungelöste Tasks ---
+    unsolved_tasks = [t for t in tasks if t['loesung'] and '?' in t['loesung']]
+    if unsolved_tasks:
+        if verbose:
+            print(f"\n  [Phase 5b] Pattern-Lookup für {len(unsolved_tasks)} ungelöste Tasks...")
+        need_rerun = False
+        for task in unsolved_tasks:
+            pattern = ''.join(
+                solver.best_grid[zr][zc] or '?'
+                for zr, zc in task['koordinaten']
+            )
+            known = sum(1 for c in pattern if c != '?')
+            if known == 0:
+                continue
+
+            # Prüfen ob ein vorhandener Kandidat bereits zum Muster passt
+            valid = [
+                w for w in task['kandidaten']
+                if len(w) == task['laenge'] and all(
+                    p == '?' or p == w[i] for i, p in enumerate(pattern)
+                )
+            ]
+            if valid:
+                continue
+
+            # Direkte LLM-Anfrage mit Pattern (umgeht OCR-Cleaning)
+            pattern_prompt = f"{task['frage']} (muster: {pattern.lower()})"
+            if verbose:
+                print(f"    \"{task['frage'][:35]}\" muster={pattern} → LLM...")
+            new_answers = []
+            source = 'none'
+            if lookup.use_claude:
+                from kreuzwort.lexikon.claude_fallback import ask_claude
+                new_answers = ask_claude(pattern_prompt, task['laenge'])
+                if new_answers:
+                    source = 'claude'
+            if not new_answers and lookup.use_groq:
+                from kreuzwort.lexikon.groq_fallback import ask_groq
+                new_answers = ask_groq(pattern_prompt, task['laenge'])
+                if new_answers:
+                    source = 'groq'
+            filtered = [
+                a for a in new_answers
+                if len(a) == task['laenge'] and all(
+                    p == '?' or p.upper() == a[i] for i, p in enumerate(pattern)
+                )
+            ]
+            if filtered:
+                if verbose:
+                    print(f"      → {filtered} (via {source})")
+                # Korrekte Antworten vorne einreihen + in DB merken
+                task['kandidaten'] = filtered + [
+                    c for c in task['kandidaten'] if c not in filtered
+                ]
+                lookup._save(task['frage'], filtered,
+                             task.get('frage_original', task['frage']),
+                             task['laenge'], int(img_num))
+                need_rerun = True
+
+        if need_rerun:
+            solver.fill_remaining()
+            for task in tasks:
+                wort = ''.join(
+                    solver.best_grid[zr][zc] or '?'
+                    for zr, zc in task['koordinaten']
+                )
+                task['loesung'] = wort
+            geloest = sum(1 for t in tasks if '?' not in t.get('loesung', '?'))
+            result['solved'] = geloest
+            if verbose:
+                print(f"  Nach Phase 5b: {geloest}/{len(tasks)}")
+
     result['solved'] = geloest
     result['success'] = success
 

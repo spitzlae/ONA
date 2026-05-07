@@ -86,11 +86,14 @@ def ask_claude(frage: str, laenge: int) -> list[str]:
         data = response.json()
         raw = data.get("content", [{}])[0].get("text", "")
 
+        # Parsing: Zeilen zuerst aufspalten, dann Kommas — so werden auch
+        # Antworten gefunden wenn Claude mit Erklärungstext antwortet.
         answers = []
-        for part in raw.split(','):
-            clean = ''.join(c for c in part.strip() if c.isalpha()).upper()
-            if clean and len(clean) == laenge and clean not in answers:
-                answers.append(clean)
+        for line in raw.split('\n'):
+            for part in line.split(','):
+                clean = ''.join(c for c in part.strip() if c.isalpha()).upper()
+                if clean and len(clean) == laenge and clean not in answers:
+                    answers.append(clean)
 
         return answers
 

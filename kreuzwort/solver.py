@@ -229,6 +229,65 @@ class BacktrackingCSPSolver:
 
         return False
 
+    def _get_valid_for_grid(self, task: dict,
+                            grid: list[list[str]]) -> list[str]:
+        """Gibt Kandidaten zurück die mit einem bestimmten Grid kompatibel sind."""
+        valid = []
+        for wort in task['kandidaten']:
+            if len(wort) != len(task['koordinaten']):
+                continue
+            if all(
+                not grid[zr][zc] or grid[zr][zc] == wort[i]
+                for i, (zr, zc) in enumerate(task['koordinaten'])
+            ):
+                valid.append(wort)
+        return valid
+
+    def _mini_backtrack(self, task_indices: list[int], pos: int) -> bool:
+        """Backtracking auf einem Subset von Tasks in best_grid."""
+        if pos >= len(task_indices):
+            return True
+
+        task = self.tasks[task_indices[pos]]
+        valid = self._get_valid_for_grid(task, self.best_grid)
+
+        for wort in valid:
+            changed = []
+            for i, (zr, zc) in enumerate(task['koordinaten']):
+                if not self.best_grid[zr][zc]:
+                    self.best_grid[zr][zc] = wort[i]
+                    changed.append((zr, zc))
+
+            if self._mini_backtrack(task_indices, pos + 1):
+                return True
+
+            for zr, zc in changed:
+                self.best_grid[zr][zc] = ''
+
+        # Greedy-Skip: Task kann nicht platziert werden, weiter mit nächstem
+        return self._mini_backtrack(task_indices, pos + 1)
+
+    def fill_remaining(self) -> None:
+        """Mini-CSP Backtracking für ungelöste Tasks in best_grid."""
+        unsolved = [
+            idx for idx, task in enumerate(self.tasks)
+            if any(not self.best_grid[zr][zc] for zr, zc in task['koordinaten'])
+        ]
+        if not unsolved:
+            return
+
+        # MCV-Heuristik: Tasks mit wenigsten gültigen Kandidaten zuerst
+        unsolved.sort(
+            key=lambda i: len(self._get_valid_for_grid(self.tasks[i], self.best_grid))
+        )
+
+        self._mini_backtrack(unsolved, 0)
+
+        self.best_placed = sum(
+            1 for task in self.tasks
+            if all(self.best_grid[zr][zc] for zr, zc in task['koordinaten'])
+        )
+
     def solve_with_restarts(self, max_attempts: int = 3) -> bool:
         """Mehrere Lösungsversuche mit Fortschrittsanzeige."""
         if self.verbose:
@@ -247,19 +306,17 @@ class BacktrackingCSPSolver:
                         print(f"  Vollständig gelöst!")
                     return True
 
-                threshold = len(self.tasks) * 0.80
-                if self.best_placed >= threshold:
-                    if self.verbose:
-                        print(f"  {self.best_placed}/{len(self.tasks)} erreicht")
-                    return True
-
             except Exception as e:
                 if self.verbose:
                     print(f"  Fehler in Versuch {attempt + 1}: {e}")
                 continue
 
+        # Post-Processing: verbleibende Tasks mit Mini-CSP ergänzen
+        if self.best_placed < len(self.tasks):
+            self.fill_remaining()
+
         if self.verbose:
-            print(f"  Best: {self.best_placed}/{len(self.tasks)}")
+            print(f"  {self.best_placed}/{len(self.tasks)} erreicht")
         return self.best_placed == len(self.tasks)
 
     def get_result_grid(self) -> list[list[str]]:
