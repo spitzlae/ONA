@@ -202,7 +202,8 @@ def process_riddle(img_num: str, lookup: LexikonLookup,
 
         alle_kandidaten = []
         for f in fragen_liste:
-            answers, source = lookup.get_answers(f, laenge)
+            answers, source = lookup.get_answers(f, laenge,
+                                                  source_image=int(img_num))
             alle_kandidaten.extend(answers)
 
         alle_kandidaten = list(dict.fromkeys(alle_kandidaten))
