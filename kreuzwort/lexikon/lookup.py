@@ -170,25 +170,52 @@ class LexikonLookup:
         else:
             self.cache[q_key] = answers
 
-        # SQLite-DB persistieren
-        result = add_question(q_key, frage_original, laenge, source_image,
-                              self.db_path)
-        if result in ('added', 'updated'):
-            # ID der Frage holen um Antworten zu speichern
-            from kreuzwort.lexikon.db import _get_connection
-            try:
-                conn = _get_connection(self.db_path)
-                cursor = conn.cursor()
+        # SQLite-DB persistieren — Upsert in einem Schritt
+        from kreuzwort.lexikon.db import _get_connection
+        try:
+            conn = _get_connection(self.db_path)
+            cursor = conn.cursor()
+            answers_str = ",".join(answers)
+
+            # Existiert der Eintrag schon (egal welches source_image)?
+            cursor.execute(
+                "SELECT id FROM questions WHERE question_text = ?",
+                (q_key,)
+            )
+            row = cursor.fetchone()
+
+            if row:
+                # Update: Antworten ergänzen
                 cursor.execute(
-                    "SELECT id FROM questions WHERE question_text = ?",
-                    (q_key,)
+                    "SELECT possible_answers FROM questions WHERE id = ?",
+                    (row[0],)
                 )
-                row = cursor.fetchone()
-                conn.close()
-                if row:
-                    update_answers(row[0], answers, self.db_path)
-            except Exception:
-                pass
+                existing_answers = cursor.fetchone()[0] or ""
+                if existing_answers:
+                    all_answers = set(existing_answers.split(","))
+                    all_answers.update(answers)
+                    answers_str = ",".join(all_answers)
+
+                cursor.execute("""
+                    UPDATE questions
+                    SET possible_answers = ?, is_missing = 0
+                    WHERE id = ?
+                """, (answers_str, row[0]))
+            else:
+                # Insert: Neuer Eintrag mit Antworten
+                cursor.execute("""
+                    INSERT INTO questions
+                    (question_text, question_text_ocr_raw, question_text_ocr_cleaned,
+                     answer_length, source_image_num, is_missing, category,
+                     possible_answers)
+                    VALUES (?, ?, ?, ?, ?, 0, 'crossword', ?)
+                """, (q_key, frage_original, q_key,
+                      laenge, source_image, answers_str))
+
+            conn.commit()
+            conn.close()
+        except Exception:
+            pass
 
     def get_stats(self) -> dict:
         """Gibt Statistiken über die Suche zurück."""

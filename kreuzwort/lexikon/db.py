@@ -124,8 +124,13 @@ def load_cache(db_path: Path = None) -> dict[str, list[str]]:
     """
     Lädt alle beantworteten Fragen in den Speicher.
 
+    Wendet OCR-Cleaning auf die Keys an, damit z.B.
+    "44-takt" als "4/4-takt" gefunden wird.
+
     Returns: {frage_lowercase: [ANTWORT1, ANTWORT2, ...]}
     """
+    from kreuzwort.ocr_cleaning import clean_ocr_text
+
     cache = {}
     try:
         conn = _get_connection(db_path)
@@ -136,9 +141,16 @@ def load_cache(db_path: Path = None) -> dict[str, list[str]]:
             WHERE possible_answers IS NOT NULL AND possible_answers != ''
         """)
         for question_text, answers in cursor.fetchall():
-            q_key = question_text.lower().strip()
+            # OCR-Cleaning auf den Key anwenden
+            cleaned, _ = clean_ocr_text(question_text)
+            q_key = cleaned.lower().strip()
             answers_list = [a.strip() for a in answers.split(',') if a.strip()]
-            cache[q_key] = answers_list
+            if q_key in cache:
+                existing = set(cache[q_key])
+                existing.update(answers_list)
+                cache[q_key] = list(existing)
+            else:
+                cache[q_key] = answers_list
         conn.close()
     except Exception:
         pass
