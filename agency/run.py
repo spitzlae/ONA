@@ -3,11 +3,13 @@ Agency Runner — Haupteinstiegspunkt.
 
 Verwendung:
     python -m agency "Erstelle einen Business Plan für AI-Beratung"
+    python -m agency --rounds 3 "Erstelle einen Business Plan für AI-Beratung"
     python -m agency  (interaktiver Modus)
 """
 
 import sys
 import json
+import os
 from agency.orchestrator import plan, run_agent, consolidate
 
 
@@ -145,10 +147,13 @@ def _resolve_dependencies(roles: list) -> list[list[dict]]:
     return batches
 
 
-def run(prompt: str, context: str = ""):
-    """Führt den kompletten Agency-Workflow aus."""
+def _run_single_round(prompt: str, context: str = "") -> tuple[dict, dict, str]:
+    """Führt eine einzelne Runde aus: Planung → Agenten → Konsolidierung.
 
-    # Phase 1: Planung
+    Returns:
+        (plan_data, results, consolidated_text)
+    """
+    # Planung
     print("\n[Orchestrator] Analysiere Auftrag...")
     plan_data = plan(prompt, context)
 
@@ -156,25 +161,26 @@ def run(prompt: str, context: str = ""):
         print(f"\nFEHLER: {plan_data['error']}")
         if 'raw' in plan_data:
             print(f"\nRohe Antwort:\n{plan_data['raw']}")
-        return
+        return plan_data, {}, ""
 
     _print_plan(plan_data)
 
-    # Rückfragen?
-    questions = plan_data.get('clarifying_questions', [])
-    if questions and sys.stdin.isatty():
-        print("Möchtest du die Rückfragen beantworten? (Enter = überspringen)")
-        try:
-            answers = input("> ").strip()
-            if answers:
-                context += f"\nAntworten auf Rückfragen: {answers}"
-                print("\n[Orchestrator] Überarbeite Plan mit neuen Infos...")
-                plan_data = plan(prompt, context)
-                _print_plan(plan_data)
-        except EOFError:
-            pass
+    # Rückfragen nur in der ersten Runde (kein previous_result im context)
+    if "ERGEBNIS DER VORHERIGEN RUNDE" not in context:
+        questions = plan_data.get('clarifying_questions', [])
+        if questions and sys.stdin.isatty():
+            print("Möchtest du die Rückfragen beantworten? (Enter = überspringen)")
+            try:
+                answers = input("> ").strip()
+                if answers:
+                    context += f"\nAntworten auf Rückfragen: {answers}"
+                    print("\n[Orchestrator] Überarbeite Plan mit neuen Infos...")
+                    plan_data = plan(prompt, context)
+                    _print_plan(plan_data)
+            except EOFError:
+                pass
 
-    # Phase 2: Agenten ausführen
+    # Agenten ausführen
     print(f"{'='*60}")
     print("AUSFÜHRUNG")
     print(f"{'='*60}")
@@ -190,7 +196,6 @@ def run(prompt: str, context: str = ""):
         for role in batch:
             print(f"\n  [{role['id']}] {role['title']} arbeitet...")
 
-            # Kontext von Abhängigkeiten sammeln
             agent_context = {}
             for dep_id in role.get('depends_on', []):
                 if dep_id in results:
@@ -199,12 +204,11 @@ def run(prompt: str, context: str = ""):
             result = run_agent(role, agent_context if agent_context else None)
             results[role['id']] = result
 
-            # Kurze Vorschau
             preview = result[:150].replace('\n', ' ')
             print(f"  [{role['id']}] Fertig ({len(result)} Zeichen)")
             print(f"         {preview}...")
 
-    # Phase 3: Konsolidierung
+    # Konsolidierung
     print(f"\n{'='*60}")
     print("[Orchestrator] Konsolidiere Ergebnisse...")
     print(f"{'='*60}\n")
@@ -212,9 +216,32 @@ def run(prompt: str, context: str = ""):
     final = consolidate(plan_data, results)
     print(final)
 
-    # Ergebnis speichern — Markdown
-    output_md = "agency_result.md"
-    md_content = f"# {plan_data.get('project_title', 'Ergebnis')}\n\n"
+    return plan_data, results, final
+
+
+def _save_round(plan_data: dict, results: dict, final: str,
+                round_num: int, total_rounds: int, open_browser: bool = True):
+    """Speichert Ergebnis einer Runde als .md und .html."""
+    title = plan_data.get('project_title', 'Ergebnis')
+    roles = plan_data.get('roles', [])
+
+    # Dateinamen
+    if total_rounds == 1:
+        suffix = ""
+    else:
+        labels = {1: "initial", total_rounds: "final"}
+        label = labels.get(round_num, f"draft{round_num - 1}")
+        suffix = f"_{label}"
+
+    output_md = f"agency_result{suffix}.md"
+    output_html = f"agency_result{suffix}.html"
+
+    # Markdown zusammenbauen
+    round_info = ""
+    if total_rounds > 1:
+        round_info = f"\n*Runde {round_num}/{total_rounds}*\n\n"
+
+    md_content = f"# {title}\n\n{round_info}"
     md_content += final
     md_content += "\n\n---\n\n## Einzelergebnisse der Experten\n\n"
     for role in roles:
@@ -226,43 +253,108 @@ def run(prompt: str, context: str = ""):
     with open(output_md, 'w', encoding='utf-8') as f:
         f.write(md_content)
 
-    # Ergebnis speichern — HTML
-    output_html = "agency_result.html"
-    _save_html(md_content, plan_data.get('project_title', 'Ergebnis'), output_html)
+    _save_html(md_content, f"{title} (Runde {round_num})" if total_rounds > 1 else title, output_html)
 
     print(f"\n[Gespeichert: {output_md}]")
     print(f"[Gespeichert: {output_html}]")
 
     # Auf WSL automatisch im Browser öffnen
-    import shutil
-    if shutil.which("explorer.exe"):
-        import subprocess
-        try:
-            import os
-            abs_path = os.path.abspath(output_html)
-            win_path = subprocess.run(
-                ["wslpath", "-w", abs_path],
-                capture_output=True, text=True
-            ).stdout.strip()
-            if win_path:
-                subprocess.Popen(["explorer.exe", win_path])
-        except Exception:
-            pass
+    if open_browser:
+        import shutil
+        if shutil.which("explorer.exe"):
+            import subprocess
+            try:
+                abs_path = os.path.abspath(output_html)
+                win_path = subprocess.run(
+                    ["wslpath", "-w", abs_path],
+                    capture_output=True, text=True
+                ).stdout.strip()
+                if win_path:
+                    subprocess.Popen(["explorer.exe", win_path])
+            except Exception:
+                pass
+
+    return md_content
+
+
+def run(prompt: str, context: str = "", rounds: int = 1):
+    """Führt den Agency-Workflow aus, optional mit mehreren Runden.
+
+    Args:
+        prompt: Der Auftrag
+        context: Zusätzlicher Kontext
+        rounds: Anzahl Runden (1=einmalig, 2+=iterativ mit Feedback)
+    """
+    round_context = context
+
+    for round_num in range(1, rounds + 1):
+        is_last = (round_num == rounds)
+
+        if rounds > 1:
+            labels = {1: "Initial", rounds: "Final"}
+            label = labels.get(round_num, f"Draft {round_num - 1}")
+            print(f"\n{'#'*60}")
+            print(f"  RUNDE {round_num}/{rounds}: {label}")
+            print(f"{'#'*60}")
+
+        plan_data, results, final = _run_single_round(prompt, round_context)
+
+        if 'error' in plan_data or not final:
+            return
+
+        # Speichern (Browser nur bei letzter Runde öffnen)
+        md_content = _save_round(plan_data, results, final,
+                                 round_num, rounds, open_browser=is_last)
+
+        # Nach jeder Runde außer der letzten: Feedback einholen
+        if not is_last and sys.stdin.isatty():
+            print(f"\n{'='*60}")
+            print(f"REVIEW — Runde {round_num}/{rounds} abgeschlossen")
+            print(f"{'='*60}")
+            print("Was soll in der nächsten Runde verbessert werden?")
+            print("(Enter = ohne Feedback weiter)")
+            try:
+                feedback = input("> ").strip()
+            except EOFError:
+                feedback = ""
+
+            # Kontext für nächste Runde aufbauen
+            round_context = context
+            round_context += f"\n\n--- ERGEBNIS DER VORHERIGEN RUNDE (Runde {round_num}) ---\n"
+            round_context += final[:8000]  # Gekürzt um Token-Limit nicht zu sprengen
+            if feedback:
+                round_context += f"\n\n--- FEEDBACK DES KUNDEN ---\n{feedback}"
+            round_context += "\n\nBitte überarbeite und verbessere das Ergebnis basierend auf dem Feedback."
 
 
 def main():
-    if len(sys.argv) > 1:
-        prompt = " ".join(sys.argv[1:])
+    args = sys.argv[1:]
+    rounds = 1
+
+    # --rounds N parsen
+    if "--rounds" in args:
+        idx = args.index("--rounds")
+        try:
+            rounds = int(args[idx + 1])
+            args = args[:idx] + args[idx + 2:]
+        except (IndexError, ValueError):
+            print("Fehler: --rounds braucht eine Zahl (z.B. --rounds 3)")
+            return
+
+    if args:
+        prompt = " ".join(args)
     else:
         print("AGENCY — Multi-Agent Orchestrator")
         print("="*40)
+        if rounds > 1:
+            print(f"[{rounds} Runden: Initial → Draft → Final]")
         print("Beschreibe deinen Auftrag:")
         prompt = input("> ").strip()
         if not prompt:
             print("Kein Auftrag. Abbruch.")
             return
 
-    run(prompt)
+    run(prompt, rounds=rounds)
 
 
 if __name__ == '__main__':
