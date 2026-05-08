@@ -44,26 +44,37 @@ def _ask_claude(system_prompt: str, user_prompt: str,
     if not token:
         raise RuntimeError("build-cli auth token fehlgeschlagen")
 
-    response = requests.post(
-        f"{_PROXY_URL}/v1/messages",
-        headers={
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json",
-            "anthropic-version": "2023-06-01",
-            **_CUSTOM_HEADERS,
-        },
-        json={
-            "model": _CLAUDE_MODEL,
-            "max_tokens": max_tokens,
-            "temperature": temperature,
-            "system": system_prompt,
-            "messages": [{"role": "user", "content": user_prompt}],
-        },
-        timeout=60,
-    )
-    response.raise_for_status()
-    data = response.json()
-    return data["content"][0]["text"]
+    last_error = None
+    for attempt in range(3):
+        try:
+            response = requests.post(
+                f"{_PROXY_URL}/v1/messages",
+                headers={
+                    "Authorization": f"Bearer {token}",
+                    "Content-Type": "application/json",
+                    "anthropic-version": "2023-06-01",
+                    **_CUSTOM_HEADERS,
+                },
+                json={
+                    "model": _CLAUDE_MODEL,
+                    "max_tokens": max_tokens,
+                    "temperature": temperature,
+                    "system": system_prompt,
+                    "messages": [{"role": "user", "content": user_prompt}],
+                },
+                timeout=300,
+            )
+            response.raise_for_status()
+            data = response.json()
+            return data["content"][0]["text"]
+        except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError) as e:
+            last_error = e
+            if attempt < 2:
+                import time
+                wait = 10 * (attempt + 1)
+                print(f"  [Timeout] Retry in {wait}s... (Versuch {attempt + 2}/3)")
+                time.sleep(wait)
+    raise RuntimeError(f"Claude API nach 3 Versuchen fehlgeschlagen: {last_error}")
 
 
 def _get_groq_client() -> Groq:
